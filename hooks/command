@@ -31,5 +31,9 @@ function run_octorelease() {
     "${octo_command[@]}"
 }
 
+echo "--- :hammer: Running octo"
+printf "%q " "${octo_command[@]}"
+echo
+
 run_octorelease
 exit 0
