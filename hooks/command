@@ -28,7 +28,7 @@ if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; t
 fi
 
 function run_octorelease() {
-    "${octo_command[@}]}"
+    "${octo_command[@]}"
 }
 
 run_octorelease
