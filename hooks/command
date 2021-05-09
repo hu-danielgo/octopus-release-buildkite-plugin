@@ -8,7 +8,7 @@ function plugin_read_config() {
 }
 
 
-octo_command=("octo" "create-release" "--progress" "--project=$(plugin_read_config PROJECT)")
+octo_command=("octo" "create-release" "--progress" "--project=${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT}")
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION:-}" ]] ; then
     octo_command+=("--packageVersion=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION")
@@ -31,6 +31,9 @@ function run_octorelease() {
     "${octo_command[@]}"
 }
 
+
+echo "$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT"
+echo "$OCTOPUS_PROJECT_NAME"
 echo "--- :hammer: Running octo"
 printf "%q " "${octo_command[@]}"
 echo
