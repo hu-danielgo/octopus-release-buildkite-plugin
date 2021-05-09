@@ -1,0 +1,28 @@
+name: Octopus Deploy Create Release
+description: Creates a new release in Octopus Deploy
+author: https://github.com/hu-danielgo
+requirements:
+  - octo #Make sure the Octo CLI is in your path
+configuration:
+  properties:
+    octopus-api-key-env:
+      type: string
+      default: OCTOPUS_CLI_API_KEY
+      description: The environment variable with the API key
+    octopus-server-env:
+      type: string
+      default: OCTOPUS_CLI_SERVER
+      description: The environment variable with the server URL
+    project:
+      type: string
+    packageVersion:
+      type: string
+    releaseNumber:
+      type: string
+    releaseNotesArtifactName:
+      type: string
+  required:
+    - project
+  additionalProperties: false
+    
+    

@@ -1,0 +1,28 @@
+#!/bin/bash
+set -euo pipefail
+
+octo_command=("octo" "create-release" "--progress" "--project=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PRJOECT" "--ref=$BUILDKITE_COMMIT")
+
+if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION:-}" ]] ; then
+    octo_command+=("--pacakgeVersion=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION")
+fi
+
+if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER:-}" ]] ; then
+    octo_command+=("--releaseNumber=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER")
+fi
+
+if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; then
+    buildkite-agent artifact \
+        download \
+        "$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME" \
+        "releaseNotes.md"
+    
+    octo_command+=("--releaseNotesFile=releaseNotes.md")
+fi
+
+run_octorelease() {
+    "${octo_command[@}]}"
+}
+
+run_octorelease
+exit 0
