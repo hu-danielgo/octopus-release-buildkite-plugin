@@ -21,6 +21,8 @@ configuration:
       type: string
     releaseNotesArtifactName:
       type: string
+    releaseChannel:
+      type: string
   required:
     - project
   additionalProperties: false

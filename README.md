@@ -19,5 +19,6 @@ steps:
           project: 'my-octopus-project' # required, can be name or ID
           packageVersion: '1.0.1' # required if auto package selection not enabled
           releaseNumber: '1.2.3' # optional (default: null)
-          releaseNotesArtifactName: 'my_release_notes.md' # optional
+          releaseNotesArtifactName: 'my_release_notes.md' # optional Buildkite artifact path
+          releaseChannel: Channels-26 # optional Octopus Channel name or ID
 ```

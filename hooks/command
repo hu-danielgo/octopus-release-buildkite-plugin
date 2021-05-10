@@ -11,6 +11,10 @@ if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER:-}" ]] ; then
     octo_command+=("--releaseNumber=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER")
 fi
 
+if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASECHANNEL:-}" ]] ; then
+    octo_command+=("--channel $BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASECHANNEL")
+fi
+
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; then
     buildkite-agent artifact \
         download \
