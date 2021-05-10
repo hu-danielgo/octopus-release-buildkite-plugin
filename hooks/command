@@ -22,9 +22,9 @@ if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; t
     buildkite-agent artifact \
         download \
         "$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME" \
-        "releaseNotes.md"
+        "."
     
-    octo_command+=("--releaseNotesFile=releaseNotes.md")
+    octo_command+=("--releaseNotesFile=BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME")
 fi
 
 function run_octorelease() {
