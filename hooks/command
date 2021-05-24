@@ -3,12 +3,14 @@ set -euo pipefail
 
 octo_command=("octo" "create-release" "--progress" "--project=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT")
 
-if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION:-}" ]] ; then
-    octo_command+=("--packageVersion=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION")
-fi
-
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER:-}" ]] ; then
     octo_command+=("--releaseNumber=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER")
+    PLUGIN_INTERNAL_RELEASE_URL=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER
+fi
+
+if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION:-}" ]] ; then
+    octo_command+=("--packageVersion=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION")
+    PLUGIN_INTERNAL_RELEASE_URL=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION
 fi
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASECHANNEL:-}" ]] ; then
@@ -27,6 +29,11 @@ fi
 function run_octorelease() {
     "${octo_command[@]}"
 }
+
+# Octopus Release Annotation
+cat << EOF | buildkite-agent annotate --context 'buildkite-plugin-octopus-release-' --style 'info'
+## Octopus Release [$PLUGIN_INTERNAL_RELEASE_URL]($OCTOPUS_CLI_SERVER/app#/projects/$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT/deployments/releases/$PLUGIN_INTERNAL_RELEASE_URL)
+EOF
 
 echo "--- :hammer: Running octo"
 printf "%q " "${octo_command[@]}"
