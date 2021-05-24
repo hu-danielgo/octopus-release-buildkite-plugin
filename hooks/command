@@ -46,9 +46,9 @@ if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; t
     octo_release_command+=("--releaseNotesFile=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME")
 fi
 
-octo_pack_command=("octo" "pack" "--id=$BUILDKITE_PLUGIN_PACKAGEID" "--format=Zip" "--version=$PLUGIN_PACKAGE_VERSION")
-octo_push_command=("octo" "push" "--package=${BUILDKITE_PLUGIN_PACKAGEID}.${PLUGIN_PACKAGE_VERSION}.zip")
-octo_build_info_command=("octo" "build-information" "--package-id=$BUILDKITE_PLUGIN_PACKAGEID" "--version=$PLUGIN_PACKAGE_VERSION" "--file=buildInformation.json")
+octo_pack_command=("octo" "pack" "--id=${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEID:-}" "--format=Zip" "--version=$PLUGIN_PACKAGE_VERSION")
+octo_push_command=("octo" "push" "--package=${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEID:-}.${PLUGIN_PACKAGE_VERSION}.zip")
+octo_build_info_command=("octo" "build-information" "--package-id=${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEID:-}" "--version=$PLUGIN_PACKAGE_VERSION" "--file=buildInformation.json")
 if [[ -n "${BUILDKITE_PLUGIN_PACKAGEINCLUDE:-}" ]] ; then
     octo_pack_command+=("--include=$BUILDKITE_PLUGIN_PACKAGEINCLUDE")
 fi
@@ -63,12 +63,14 @@ function run_octorelease() {
     "${octo_release_command[@]}"
 }
 
-echo "--- :hammer: Running octo push+pack"
-printf "%q " "${octo_pack_command[@]}"
-printf "%q " "${octo_push_command[@]}"
-printf "%q " "${octo_build_info_command[@]}"
-echo
-run_octopushpack
+if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEID:-}" ]] ; then
+    echo "--- :hammer: Running octo push+pack"
+    printf "%q " "${octo_pack_command[@]}"
+    printf "%q " "${octo_push_command[@]}"
+    printf "%q " "${octo_build_info_command[@]}"
+    echo
+    run_octopushpack
+fi
 
 
 echo "--- :hammer: Running octo release"
