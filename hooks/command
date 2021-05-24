@@ -65,9 +65,9 @@ function run_octorelease() {
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEID:-}" ]] ; then
     echo "--- :hammer: Running octo push+pack"
-    printf "%q " "${octo_pack_command[@]}"
-    printf "%q " "${octo_push_command[@]}"
-    printf "%q " "${octo_build_info_command[@]}"
+    printf "%q " "${octo_pack_command[@]}" "\n"
+    printf "%q " "${octo_push_command[@]}" "\n"
+    printf "%q " "${octo_build_info_command[@]}" "\n"
     echo
     run_octopushpack
 fi
