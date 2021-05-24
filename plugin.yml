@@ -15,6 +15,12 @@ configuration:
       description: The environment variable with the server URL
     project:
       type: string
+    # Specify a package ID if you would like to pack+push a package too
+    packageId:
+      type: string
+    # File pattern of files to include in pack+push
+    packageInclude:
+      type: string
     packageVersion:
       type: string
     releaseNumber:

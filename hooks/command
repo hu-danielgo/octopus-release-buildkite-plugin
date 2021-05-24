@@ -1,16 +1,36 @@
 #!/bin/bash
 set -euo pipefail
 
+SANITISED_BUILDKITE_MESSAGE=$(echo "$BUILDKITE_MESSAGE" | tr '\n' ' ' | sed 's/"/\\"/g')
+cat << EOF > ./buildInformation.json
+{
+  "BuildEnvironment":"Buildkite",
+  "Branch":"$BUILDKITE_BRANCH",
+  "BuildNumber":"$BUILDKITE_BUILD_NUMBER",
+  "BuildUrl":"$BUILDKITE_BUILD_URL",
+  "VcsType":"Git",
+  "VcsRoot":"$BUILDKITE_REPO",
+  "VcsCommitNumber":"$BUILDKITE_COMMIT",
+  "Commits":[
+      {
+         "Id":"$BUILDKITE_COMMIT",
+         "Comment":"$SANITISED_BUILDKITE_MESSAGE"
+      }
+   ]
+}
+EOF
+cat ./buildInformation.json
+
 octo_release_command=("octo" "create-release" "--progress" "--project=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT")
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER:-}" ]] ; then
     octo_release_command+=("--releaseNumber=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER")
-    PLUGIN_INTERNAL_RELEASE_URL=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER
+    PLUGIN_PACKAGE_VERSION=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER
 fi
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION:-}" ]] ; then
     octo_release_command+=("--packageVersion=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION")
-    PLUGIN_INTERNAL_RELEASE_URL=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION
+    PLUGIN_PACKAGE_VERSION=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION
 fi
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASECHANNEL:-}" ]] ; then
@@ -26,18 +46,39 @@ if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; t
     octo_release_command+=("--releaseNotesFile=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME")
 fi
 
+octo_pack_command=("octo" "pack" "--id=$BUILDKITE_PLUGIN_PACKAGEID" "--format=Zip" "--version=$PLUGIN_PACKAGE_VERSION")
+octo_push_command=("octo" "push" "--package=${BUILDKITE_PLUGIN_PACKAGEID}.${PLUGIN_PACKAGE_VERSION}.zip")
+octo_build_info_command=("octo" "build-information" "--package-id=$BUILDKITE_PLUGIN_PACKAGEID" "--version=$PLUGIN_PACKAGE_VERSION" "--file=buildInformation.json")
+if [[ -n "${BUILDKITE_PLUGIN_PACKAGEINCLUDE:-}" ]] ; then
+    octo_pack_command+=("--include=$BUILDKITE_PLUGIN_PACKAGEINCLUDE")
+fi
+
+function run_octopushpack() {
+    "${octo_pack_command[@]}"
+    "${octo_push_command[@]}"
+    "${octo_build_info_command[@]}"
+}
+
 function run_octorelease() {
     "${octo_release_command[@]}"
 }
 
-# Octopus Release Annotation
-cat << EOF | buildkite-agent annotate --context 'buildkite-plugin-octopus-release-' --style 'info'
-## Octopus Release [$PLUGIN_INTERNAL_RELEASE_URL]($OCTOPUS_CLI_SERVER/app#/projects/$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT/deployments/releases/$PLUGIN_INTERNAL_RELEASE_URL)
-EOF
+echo "--- :hammer: Running octo push+pack"
+printf "%q " "${octo_pack_command[@]}"
+printf "%q " "${octo_push_command[@]}"
+printf "%q " "${octo_build_info_command[@]}"
+echo
+run_octopushpack
 
-echo "--- :hammer: Running octo"
+
+echo "--- :hammer: Running octo release"
 printf "%q " "${octo_release_command[@]}"
 echo
-
 run_octorelease
+
+# Octopus Release Annotation
+cat << EOF | buildkite-agent annotate --context 'buildkite-plugin-octopus-release-' --style 'info'
+## Octopus Release [$PLUGIN_PACKAGE_VERSION]($OCTOPUS_CLI_SERVER/app#/projects/$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT/deployments/releases/$PLUGIN_PACKAGE_VERSION)
+EOF
+
 exit 0
