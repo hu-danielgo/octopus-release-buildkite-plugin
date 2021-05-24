@@ -1,20 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 
-octo_command=("octo" "create-release" "--progress" "--project=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT")
+octo_release_command=("octo" "create-release" "--progress" "--project=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PROJECT")
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER:-}" ]] ; then
-    octo_command+=("--releaseNumber=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER")
+    octo_release_command+=("--releaseNumber=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER")
     PLUGIN_INTERNAL_RELEASE_URL=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENUMBER
 fi
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION:-}" ]] ; then
-    octo_command+=("--packageVersion=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION")
+    octo_release_command+=("--packageVersion=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION")
     PLUGIN_INTERNAL_RELEASE_URL=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEVERSION
 fi
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASECHANNEL:-}" ]] ; then
-    octo_command+=("--channel=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASECHANNEL")
+    octo_release_command+=("--channel=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASECHANNEL")
 fi
 
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; then
@@ -23,11 +23,11 @@ if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; t
         "$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME" \
         "."
     
-    octo_command+=("--releaseNotesFile=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME")
+    octo_release_command+=("--releaseNotesFile=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME")
 fi
 
 function run_octorelease() {
-    "${octo_command[@]}"
+    "${octo_release_command[@]}"
 }
 
 # Octopus Release Annotation
@@ -36,7 +36,7 @@ cat << EOF | buildkite-agent annotate --context 'buildkite-plugin-octopus-releas
 EOF
 
 echo "--- :hammer: Running octo"
-printf "%q " "${octo_command[@]}"
+printf "%q " "${octo_release_command[@]}"
 echo
 
 run_octorelease
