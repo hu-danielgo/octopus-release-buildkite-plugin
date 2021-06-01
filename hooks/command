@@ -50,7 +50,9 @@ octo_pack_command=("octo" "pack" "--id=${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAG
 octo_push_command=("octo" "push" "--package=${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEID:-}.${PLUGIN_PACKAGE_VERSION}.zip")
 octo_build_info_command=("octo" "build-information" "--package-id=${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEID:-}" "--version=$PLUGIN_PACKAGE_VERSION" "--file=buildInformation.json")
 if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEINCLUDE:-}" ]] ; then
-    octo_pack_command+=("--include=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEINCLUDE")
+    for pattern in $BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEINCLUDE; do
+        octo_pack_command+=("--include=$pattern")
+    done
 fi
 
 function run_octopushpack() {
