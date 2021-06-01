@@ -25,5 +25,7 @@ steps:
 
           # (optional) Specifying these will additionally pack and push a package to the Octopus Package Repo
           packageId: "MyPackage" # the ID of the package to push
-          packageInclude: "package*" # File pattern of files to include in package
+          packageInclude: "package*" # File pattern for files to include in package.
+          # To include multiple patterns, seperate them with a space. e.g.:
+          # packageInclude: "package* yarn*"
 ```
