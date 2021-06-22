@@ -14,7 +14,7 @@ cat << EOF > ./buildInformation.json
   "Commits":[
       {
          "Id":"$BUILDKITE_COMMIT",
-         "Comment":"$SANITISED_BUILDKITE_MESSAGE"
+         "Comment":$SANITISED_BUILDKITE_MESSAGE
       }
    ]
 }
