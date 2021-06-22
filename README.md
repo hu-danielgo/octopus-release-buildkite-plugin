@@ -10,7 +10,7 @@ A basic configuration, assuming you already have the relevant Octopus API Key an
 steps:
   - command: echo 'Deploy preview created'
     plugins:
-      - hu-danielgo/octopus-release#v0.1.3:
+      - hu-danielgo/octopus-release#v0.1.5:
           # (optional) Names of env variables containing the API Key and Octopus Server URL
           # By default set to `OCTOPUS_CLI_API_KEY` and `OCTOPUS_CLI_SERVER`.
           octopus-api-key-env: OCTOPUS_CLI_API_KEY

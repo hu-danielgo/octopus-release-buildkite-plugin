@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-SANITISED_BUILDKITE_MESSAGE=$(echo "$BUILDKITE_MESSAGE" | tr '\n' ' ' | sed 's/"/\\"/g')
+SANITISED_BUILDKITE_MESSAGE=$(echo "$BUILDKITE_MESSAGE" | jq -aRs .)
 cat << EOF > ./buildInformation.json
 {
   "BuildEnvironment":"Buildkite",
@@ -14,7 +14,7 @@ cat << EOF > ./buildInformation.json
   "Commits":[
       {
          "Id":"$BUILDKITE_COMMIT",
-         "Comment":"$SANITISED_BUILDKITE_MESSAGE"
+         "Comment":$SANITISED_BUILDKITE_MESSAGE
       }
    ]
 }
