@@ -42,7 +42,7 @@ if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME:-}" ]] ; t
         download \
         "$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME" \
         "."
-    
+
     octo_release_command+=("--releaseNotesFile=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_RELEASENOTESARTIFACTNAME")
 fi
 
@@ -53,6 +53,9 @@ if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEINCLUDE:-}" ]] ; then
     for pattern in $BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEINCLUDE; do
         octo_pack_command+=("--include=$pattern")
     done
+fi
+if [[ -n "${BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEBASEPATH:-}" ]] ; then
+    octo_pack_command+=("--basePath=$BUILDKITE_PLUGIN_OCTOPUS_RELEASE_PACKAGEBASEPATH")
 fi
 
 function run_octopushpack() {

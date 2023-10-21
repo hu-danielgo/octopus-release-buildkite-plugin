@@ -21,6 +21,8 @@ configuration:
     # File pattern of files to include in pack+push
     packageInclude:
       type: string
+    packageBasePath:
+      type: string
     packageVersion:
       type: string
     releaseNumber:
@@ -32,5 +34,3 @@ configuration:
   required:
     - project
   additionalProperties: false
-    
-    
